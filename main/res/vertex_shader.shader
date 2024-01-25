@@ -1,15 +1,18 @@
 #version 460 core
 
-layout(location = 0) in vec3 i_position;
-layout(location = 1) in vec3 i_vertexColor;
-layout(location = 2) in vec3 i_texCoord;
+uniform mat4 u_positionTransform;
+uniform mat4 u_texTransform;
 
-out vec3 vertexColor;
-out vec3 texCoord;
+layout(location = 0) in vec4 i_position;
+layout(location = 1) in vec4 i_vertexColor;
+layout(location = 2) in vec4 i_texCoord;
+
+out vec4 vertexColor;
+out vec4 texCoord;
 
 void main()
 {
-	gl_Position = vec4(i_position, 1.0f);
+	gl_Position = u_positionTransform * i_position;
 	vertexColor = i_vertexColor;
-	texCoord = i_texCoord;
+	texCoord = u_texTransform * i_texCoord;
 }

@@ -1,62 +1,36 @@
 #include "util.h"
 #include "data.h"
 #include "stb_image.h"
-
 #include <stdio.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 struct Vertex
 {
-	Vec3 position;
-	Vec3 color;
-	Vec3 textureCoord;
+	glm::vec4 position;
+	glm::vec4 color;
+	glm::vec4 textureCoord;
 };
 
 int main()
 {
-	if(glfwInit() != GLFW_TRUE)
-	{
-		printf("Failed to initialize GLFW\n");
-		return -1;
-	}
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-
 	const int SCREEN_WIDTH = 640;
-	const int SCREEN_HEIGHT = 540;
-
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGL", nullptr, nullptr);
-	if(!window)
-	{
-		printf("Failed to create window\n");
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
+	const int SCREEN_HEIGHT = 480;
+	GLFWwindow* window = initialize(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGL", 4, 6);
 
 	glfwSetFramebufferSizeCallback(window, frameBufferResize);
-
-	if(glewInit() != GLEW_OK)
-	{
-		printf("Failed to initialize GLEW\n");
-		glfwTerminate();
-		return -1;
-	}
-	printf("Using OppenGL version : %s\n", glGetString(GL_VERSION));
-
 	glDebugMessageCallback(glDebugCallback, nullptr);
-
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	//-------------------------------------------------------------
 
 	Vertex vertices[] =
 	{
-		{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
-		{{ 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {2.0f, 0.0f, 0.0f}},
-		{{ 0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {2.0f, 2.0f, 0.0f}},
-		{{-0.5f,  0.5f, 0.0f}, {0.0f, 1.0f, 1.0f}, {0.0f, 2.0f, 0.0f}},
+		{{-0.5f, -0.5f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}},
+		{{ 0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+		{{ 0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f}},
+		{{-0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
 	};
 
 	unsigned int indices[] =
@@ -64,6 +38,9 @@ int main()
 		0, 1, 2,
 		2, 3, 0
 	};
+
+	glm::mat4 positionTransform {1.f};
+	glm::mat4 texTransform{1.f};
 
 	unsigned int vbo;
 	glGenBuffers(1, &vbo);
@@ -75,15 +52,15 @@ int main()
 	glBindVertexArray(vao);
 	glBindVertexBuffer(0, vbo, 0, sizeof(Vertex));
 
-	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+	glVertexAttribFormat(0, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
 	glVertexAttribBinding(0, 0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
+	glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
 	glVertexAttribBinding(1, 0);
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribFormat(2, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, textureCoord));
+	glVertexAttribFormat(2, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, textureCoord));
 	glVertexAttribBinding(2, 0);
 	glEnableVertexAttribArray(2);
 
@@ -115,12 +92,22 @@ int main()
 	glUniform1i(glGetUniformLocation(shaderProgram, "u_sampler"), 0);
 
 	unsigned int u_time = glGetUniformLocation(shaderProgram, "u_time");
+	unsigned int u_positionTransform = glGetUniformLocation(shaderProgram, "u_positionTransform");
+	unsigned int u_texTransform = glGetUniformLocation(shaderProgram, "u_texTransform");
 
 	while(!glfwWindowShouldClose(window))
 	{
 		processInputs(window);
 
+		positionTransform = glm::rotate(positionTransform, glm::radians(0.005f), {0.0f, 0.0f, 1.0f});
+
+		texTransform = glm::translate(texTransform, {-0.5f, -0.5f, 0.0f});
+		texTransform = glm::rotate(texTransform, glm::radians(0.005f), {0.0f, 0.0f, 1.0f});
+		texTransform = glm::translate(texTransform, {0.5f, 0.5f, 0.0f});
+
 		glUniform1f(u_time, (float)glfwGetTime());
+		glUniformMatrix4fv(u_positionTransform, 1, GL_FALSE, glm::value_ptr(positionTransform));
+		glUniformMatrix4fv(u_texTransform, 1, GL_FALSE, glm::value_ptr(texTransform));
 
 		glClearColor(0.12f, 0.12f, 0.12f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
