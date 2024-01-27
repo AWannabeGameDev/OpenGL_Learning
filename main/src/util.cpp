@@ -1,4 +1,7 @@
 #include "util.h"
+
+#include "stb_image.h"
+
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
@@ -138,4 +141,13 @@ unsigned int createShaderProgram(const char* vertexShaderPath, const char* fragm
 	glDeleteShader(fshader);
 
 	return program;
+}
+
+TextureData loadTexture(const char* path)
+{
+	int imWidth, imHeight, imNumChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* imData = stbi_load(path, &imWidth, &imHeight, &imNumChannels, 0);
+
+	return {imWidth, imHeight, imNumChannels, imData};
 }

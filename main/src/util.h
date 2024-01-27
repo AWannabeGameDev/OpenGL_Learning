@@ -4,6 +4,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+struct TextureData
+{
+	int width, height;
+	int numChannels;
+	unsigned char* data;
+};
+
 void frameBufferResize(GLFWwindow* window, int width, int height);
 
 void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, 
@@ -15,5 +22,7 @@ void processInputs(GLFWwindow* window);
 
 unsigned int compileShader(unsigned int type, const char* path);
 unsigned int createShaderProgram(const char* vertexShaderPath, const char* fragmentShaderPath);
+
+TextureData loadTexture(const char* path);
 
 #endif

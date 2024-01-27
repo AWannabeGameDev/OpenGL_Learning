@@ -1,17 +1,16 @@
 #include "util.h"
-#include "data.h"
-#include "stb_image.h"
+#include "square.h"
+#include "cube.h"
+#include "transform.h"
+
 #include <stdio.h>
+
+#include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-struct Vertex
-{
-	glm::vec4 position;
-	glm::vec4 color;
-	glm::vec4 textureCoord;
-};
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 int main()
 {
@@ -22,66 +21,54 @@ int main()
 	glfwSetFramebufferSizeCallback(window, frameBufferResize);
 	glDebugMessageCallback(glDebugCallback, nullptr);
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	glEnable(GL_DEPTH_TEST);
 
 	//-------------------------------------------------------------
 
-	Vertex vertices[] =
-	{
-		{{-0.5f, -0.5f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}},
-		{{ 0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-		{{ 0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f}},
-		{{-0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-	};
+	Prefab<CUBE> prefab;
+	createPrefab<CUBE>(prefab);
 
-	unsigned int indices[] =
+	for(size_t face = 0; face < 6; face++)
 	{
-		0, 1, 2,
-		2, 3, 0
-	};
+		prefab.faces[face][0].textureCoordinate = {1.0f, 1.0f};
+		prefab.faces[face][1].textureCoordinate = {0.0f, 1.0f};
+		prefab.faces[face][2].textureCoordinate = {0.0f, 0.0f};
+		prefab.faces[face][3].textureCoordinate = {1.0f, 0.0f};
+	}
 
-	glm::mat4 positionTransform {1.f};
-	glm::mat4 texTransform{1.f};
+	Transform trans{};
+	trans.position = {0.0f, 0.0f, -3.0f};
+
+	Transform view{};
+
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
 	unsigned int vbo;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-
-	unsigned int vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glBindVertexBuffer(0, vbo, 0, sizeof(Vertex));
-
-	glVertexAttribFormat(0, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
-	glVertexAttribBinding(0, 0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
-	glVertexAttribBinding(1, 0);
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribFormat(2, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, textureCoord));
-	glVertexAttribBinding(2, 0);
-	glEnableVertexAttribArray(2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(prefab.vertices), prefab.vertices, GL_DYNAMIC_DRAW);
 
 	unsigned int ebo;
 	glGenBuffers(1, &ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(prefab.indices), prefab.indices, GL_STATIC_DRAW);
+
+	unsigned int vao;
+	glGenVertexArrays(1, &vao);
+	setVAOFormat<CUBE>(vao);
+	attachVBO<CUBE>(vao, vbo, 0);
+	attachEBO<CUBE>(vao, ebo);
 
 	unsigned int shaderProgram = createShaderProgram("../res/vertex_shader.shader", "../res/fragment_shader.shader");
 	glUseProgram(shaderProgram);
 
-	int imWidth, imHeight, imNumChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* imData = stbi_load("../res/texture2.jpeg", &imWidth, &imHeight, &imNumChannels, 0);
-
-	unsigned int texture;
-	glGenTextures(1, &texture);
+	TextureData texture = loadTexture("../res/texture3.jpeg");
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imWidth, imHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, imData);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
@@ -91,29 +78,26 @@ int main()
 
 	glUniform1i(glGetUniformLocation(shaderProgram, "u_sampler"), 0);
 
-	unsigned int u_time = glGetUniformLocation(shaderProgram, "u_time");
-	unsigned int u_positionTransform = glGetUniformLocation(shaderProgram, "u_positionTransform");
-	unsigned int u_texTransform = glGetUniformLocation(shaderProgram, "u_texTransform");
+	unsigned int u_modelTransform = glGetUniformLocation(shaderProgram, "u_modelTransform");
+	unsigned int u_view = glGetUniformLocation(shaderProgram, "u_view");
+	unsigned int u_projection = glGetUniformLocation(shaderProgram, "u_projection");
 
 	while(!glfwWindowShouldClose(window))
 	{
 		processInputs(window);
 
-		positionTransform = glm::rotate(positionTransform, glm::radians(0.005f), {0.0f, 0.0f, 1.0f});
+		trans.rotation = glm::angleAxis((float)glfwGetTime(), glm::normalize(glm::vec3{1.0f, 1.0f, -1.0f}));
 
-		texTransform = glm::translate(texTransform, {-0.5f, -0.5f, 0.0f});
-		texTransform = glm::rotate(texTransform, glm::radians(0.005f), {0.0f, 0.0f, 1.0f});
-		texTransform = glm::translate(texTransform, {0.5f, 0.5f, 0.0f});
+		glUniformMatrix4fv(u_modelTransform, 1, GL_FALSE, glm::value_ptr(trans.matrix()));
+		glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(view.matrix()));
+		glUniformMatrix4fv(u_projection, 1, GL_FALSE, glm::value_ptr(projection));
 
-		glUniform1f(u_time, (float)glfwGetTime());
-		glUniformMatrix4fv(u_positionTransform, 1, GL_FALSE, glm::value_ptr(positionTransform));
-		glUniformMatrix4fv(u_texTransform, 1, GL_FALSE, glm::value_ptr(texTransform));
-
-		glClearColor(0.12f, 0.12f, 0.12f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)0);
+		glDrawElementsInstanced(GL_TRIANGLES, sizeof(prefab.indices) / sizeof(unsigned int), 
+								GL_UNSIGNED_INT, (const void*)0, 1);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
@@ -123,8 +107,8 @@ int main()
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &ebo);
 	glDeleteProgram(shaderProgram);
-	glDeleteTextures(1, &texture);
-	stbi_image_free(imData);
+	glDeleteTextures(1, &textureID);
+	stbi_image_free(texture.data);
 	glfwTerminate();
 
 	return 0;
