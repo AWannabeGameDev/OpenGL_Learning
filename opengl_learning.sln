@@ -10,6 +10,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "main", "main\main.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stb_image", "stb_image\stb_image.vcxproj", "{F5323CDD-CCCA-493B-B3F8-A24349B116ED}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dependencies", "dependencies\dependencies.vcxproj", "{A73FE662-7063-482B-811C-5A584D2B6864}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubiks_cube", "rubiks_cube\rubiks_cube.vcxproj", "{33C338F2-BD63-450C-98A9-240E453FAEF6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F5323CDD-CCCA-493B-B3F8-A24349B116ED} = {F5323CDD-CCCA-493B-B3F8-A24349B116ED}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +41,22 @@ Global
 		{F5323CDD-CCCA-493B-B3F8-A24349B116ED}.Release|x64.Build.0 = Release|x64
 		{F5323CDD-CCCA-493B-B3F8-A24349B116ED}.Release|x86.ActiveCfg = Release|Win32
 		{F5323CDD-CCCA-493B-B3F8-A24349B116ED}.Release|x86.Build.0 = Release|Win32
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Debug|x64.ActiveCfg = Debug|x64
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Debug|x64.Build.0 = Debug|x64
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Debug|x86.ActiveCfg = Debug|Win32
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Debug|x86.Build.0 = Debug|Win32
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Release|x64.ActiveCfg = Release|x64
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Release|x64.Build.0 = Release|x64
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Release|x86.ActiveCfg = Release|Win32
+		{A73FE662-7063-482B-811C-5A584D2B6864}.Release|x86.Build.0 = Release|Win32
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Debug|x64.ActiveCfg = Debug|x64
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Debug|x64.Build.0 = Debug|x64
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Debug|x86.ActiveCfg = Debug|Win32
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Debug|x86.Build.0 = Debug|Win32
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Release|x64.ActiveCfg = Release|x64
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Release|x64.Build.0 = Release|x64
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Release|x86.ActiveCfg = Release|Win32
+		{33C338F2-BD63-450C-98A9-240E453FAEF6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

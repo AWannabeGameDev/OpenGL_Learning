@@ -1,4 +1,6 @@
 #include "transform.h"
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 Transform::Transform() :
 	position{}, rotation{}, scale{1.0f, 1.0f, 1.0f}

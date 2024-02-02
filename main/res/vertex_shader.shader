@@ -1,6 +1,6 @@
 #version 460 core
 
-uniform mat4 u_modelTransform[1];
+uniform mat4 u_modelTransform;
 uniform mat4 u_view;
 uniform mat4 u_projection;
 
@@ -11,6 +11,6 @@ out vec2 texCoord;
 
 void main()
 {
-	gl_Position = u_projection * u_view * u_modelTransform[gl_InstanceID] * vec4(i_position, 1.0f);
-	texCoord = i_texCoord;
+	gl_Position = u_projection * u_view * u_modelTransform * vec4(i_position, 1.0f);
+	texCoord = i_texCoord; 
 }
