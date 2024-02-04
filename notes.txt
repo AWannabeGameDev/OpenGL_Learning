@@ -1,7 +1,25 @@
-Draw call structure -
-	1. How to store vertex data?
-	2. What is the vertex data format?
-	3. How to store different drawing configs?
-	4. How to switch b/w drawing configs?
-	5. How to send data of different drawing configs to GPU?
-	6. How to draw a number of objects with different drawing configs?
+HEADER FILE :
+
+	void func1();
+	void func2();
+
+	#ifdef IMPLEMENTATION
+	void func1()
+	{
+		// body
+	}
+
+	void func2()
+	{
+		// body
+	}
+	#endif
+	
+IMPLEMENTATION FILE :
+
+	#define IMPLEMENTATION
+	#include "header.h" // includes definitions because IMPLEMENTATION is defined
+	
+USER FILE :
+
+	#include "header.h" // only include declarations because IMPLEMENTATION is not defined.
