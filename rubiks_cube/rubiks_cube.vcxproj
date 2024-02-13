@@ -165,16 +165,23 @@
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\keyboard_input.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\rubiks_cube.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.h" />
     <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\keyboard_input.h" />
     <ClInclude Include="src\models.h" />
+    <ClInclude Include="src\rubiks_cube.h" />
     <ClInclude Include="src\transform.h" />
     <ClInclude Include="src\util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\vertex_shader.shder" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
