@@ -1,15 +1,8 @@
 #include "util.h"
 
-#include "stb_image.h"
-
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
-
-void frameBufferResize(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
 
 void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, 
 					 GLsizei length, const GLchar* message, const void* userParam)
@@ -49,14 +42,6 @@ GLFWwindow* initialize(int windowWidth, int windowHeight, const char* title, int
 	return window;
 }
 
-void processInputs(GLFWwindow* window)
-{
-	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
-}
-
 unsigned int compileShader(unsigned int type, const char* path)
 {
 	std::ifstream file;
@@ -68,7 +53,8 @@ unsigned int compileShader(unsigned int type, const char* path)
 	{
 		printf("Failed to open shader file\n");
 		return 0;
-	} else
+	} 
+	else
 	{
 		sstream << file.rdbuf();
 		source = sstream.str();
@@ -141,13 +127,4 @@ unsigned int createShaderProgram(const char* vertexShaderPath, const char* fragm
 	glDeleteShader(fshader);
 
 	return program;
-}
-
-TextureData loadTexture(const char* path)
-{
-	int imWidth, imHeight, imNumChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* imData = stbi_load(path, &imWidth, &imHeight, &imNumChannels, 0);
-
-	return {imWidth, imHeight, imNumChannels, imData};
 }

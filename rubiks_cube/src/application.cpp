@@ -1,11 +1,12 @@
 #include "application.h"
+
 #include <glm/gtc/type_ptr.hpp>
 
 Application::Application() :
-	SCREEN_WIDTH{1280}, SCREEN_HEIGHT{720}, window{initialize(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGL", 4, 6)},
+	SCREEN_WIDTH{1280}, SCREEN_HEIGHT{720}, window{initialize(SCREEN_WIDTH, SCREEN_HEIGHT, "Rubik's Cube", 4, 6)},
 	keys{window},
 	MOUSE_SENSITIVITY{6.0f}, camera{glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f},
-	rubiksCube{},
+	rubiksCube{}, ROTATION_SPEED_RADS{glm::radians(90.0f)},
 	shaderProgram{createShaderProgram("../res/vertex_shader.shader", "../res/fragment_shader.shader")},
 	u_modelMatrix{(unsigned int)glGetUniformLocation(shaderProgram, "u_modelMatrix")},
 	u_viewMatrix{(unsigned int)glGetUniformLocation(shaderProgram, "u_viewMatrix")},
@@ -22,6 +23,8 @@ Application::Application() :
 	keys.setKeybind("ORANGE", GLFW_KEY_O);
 	keys.setKeybind("BLUE", GLFW_KEY_B);
 	keys.setKeybind("GREEN", GLFW_KEY_G);
+	keys.setKeybind("CLOCKWISE", GLFW_KEY_RIGHT);
+	keys.setKeybind("COUNTER_CLOCKWISE", GLFW_KEY_LEFT);
 
 	glDebugMessageCallback(glDebugCallback, nullptr);
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -107,7 +110,7 @@ void Application::mousePositionCallback(double xpos, double ypos)
 		mouseMove = glm::vec3{camera.inverseRotationMatrix() * glm::vec4{mouseMove, 1.0f}};
 
 		glm::vec3 rotationAxis = glm::normalize(glm::cross(camera.behind(), mouseMove));
-		float angle = mouseMove.length() * MOUSE_SENSITIVITY * deltaTime;
+		float angle = glm::length(mouseMove) * MOUSE_SENSITIVITY * deltaTime;
 
 		rubiksCube.globalTransform.rotation = glm::angleAxis(angle, rotationAxis) * rubiksCube.globalTransform.rotation;
 
@@ -130,40 +133,54 @@ void Application::run()
 
 		if(keys.keyJustPressed("WHITE"))
 		{
-			rubiksCube.snapFace();
+			rubiksCube.unhighlightFace();
 			rubiksCube.selectedFace = RubiksCube::FACE_POS_Y;
+			rubiksCube.highlightFace();
 		}
 		else if(keys.keyJustPressed("YELLOW"))
 		{
-			rubiksCube.snapFace();
+			rubiksCube.unhighlightFace();
 			rubiksCube.selectedFace = RubiksCube::FACE_NEG_Y;
+			rubiksCube.highlightFace();
 		}
 		else if(keys.keyJustPressed("RED"))
 		{
-			rubiksCube.snapFace();
+			rubiksCube.unhighlightFace();
 			rubiksCube.selectedFace = RubiksCube::FACE_POS_Z;
+			rubiksCube.highlightFace();
 		}
 		else if(keys.keyJustPressed("ORANGE"))
 		{
-			rubiksCube.snapFace();
+			rubiksCube.unhighlightFace();
 			rubiksCube.selectedFace = RubiksCube::FACE_NEG_Z;
+			rubiksCube.highlightFace();
 		}
 		else if(keys.keyJustPressed("BLUE"))
 		{
-			rubiksCube.snapFace();
+			rubiksCube.unhighlightFace();
 			rubiksCube.selectedFace = RubiksCube::FACE_POS_X;
+			rubiksCube.highlightFace();
 		}
 		else if(keys.keyJustPressed("GREEN"))
 		{
-			rubiksCube.snapFace();
+			rubiksCube.unhighlightFace();
 			rubiksCube.selectedFace = RubiksCube::FACE_NEG_X;
+			rubiksCube.highlightFace();
+		}
+
+		if(keys.keyPressed("CLOCKWISE"))
+		{
+			rubiksCube.rotateFace(-ROTATION_SPEED_RADS * deltaTime);
+		}
+		else if(keys.keyPressed("COUNTER_CLOCKWISE"))
+		{
+			rubiksCube.rotateFace(ROTATION_SPEED_RADS * deltaTime);
 		}
 
 		if(keys.anyKeyJustReleased())
+		{
 			rubiksCube.snapFace();
-
-		if(keys.anyKeyPressed())
-			rubiksCube.rotateFace(glm::radians(60.0f) * deltaTime);
+		}
 
 		glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

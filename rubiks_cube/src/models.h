@@ -46,6 +46,8 @@ namespace models
 			{0.5f, -0.5f, -0.5f},
 		};
 
+		inline constexpr float CUBE_SIDE_LENGTH = 1.0f;
+
 		inline constexpr unsigned int indices[36] =
 		{
 			// upper-left triangle                 // lower-right triangle

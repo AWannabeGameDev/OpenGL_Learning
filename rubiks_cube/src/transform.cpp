@@ -1,5 +1,5 @@
 #include "transform.h"
-#include <iostream>
+
 #include <glm/gtx/string_cast.hpp>
 
 Transform::Transform() :
@@ -9,4 +9,13 @@ Transform::Transform() :
 glm::mat4 Transform::matrix() const
 {
 	return glm::translate(glm::mat4{1.0f}, position) * glm::mat4_cast(rotation) * glm::scale(glm::mat4{1.0f}, scale);
+}
+
+Transform Transform::operator*(const Transform& other) const
+{
+	Transform ret;
+	ret.position = position + other.position;
+	ret.rotation = rotation * other.rotation;
+	ret.scale = scale * other.scale;
+	return ret;
 }

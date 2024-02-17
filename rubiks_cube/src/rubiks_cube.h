@@ -2,7 +2,9 @@
 #define RUBIKS_CUBE_H
 
 #include <glm/glm.hpp>
+
 #include "transform.h"
+
 #include <unordered_map>
 
 template<>
@@ -21,7 +23,9 @@ struct std::hash<glm::vec<3, int>>
 class RubiksCube
 {
 public :
-	inline static constexpr int
+	typedef glm::vec<3, int> Index;
+
+	static constexpr int
 		CUBE_NUM_VOXES = 27,
 		CUBE_NUM_VOXES_PER_FACE = 9,
 		VOX_NUM_VERTS = 24,
@@ -40,8 +44,6 @@ public :
 	};
 
 private :
-	typedef glm::vec<3, int> Index;
-
 	enum VoxIndexRotation
 	{
 		CLOCKWISE,
@@ -49,7 +51,7 @@ private :
 		DOUBLE
 	};
 
-	inline static constexpr Index FACES_POS_INDEX[NUM_FACES][CUBE_NUM_VOXES_PER_FACE]
+	static constexpr Index FACES_POS_INDEX[NUM_FACES][CUBE_NUM_VOXES_PER_FACE]
 	{
 		// face +x
 		{{1, 1, 1}, {1, 1, 0}, {1, 1, -1},
@@ -82,7 +84,7 @@ private :
 		{1, -1, -1}, {0, -1, -1}, {-1, -1, -1}}
 	};
 
-	inline static constexpr glm::vec4 FACE_COLORS[NUM_FACES]
+	static constexpr glm::vec4 FACE_COLORS[NUM_FACES]
 	{
 		{0.0f, 0.0f, 1.0f, 1.0f}, // blue
 		{0.0f, 1.0f, 0.0f, 1.0f}, // green
@@ -92,7 +94,7 @@ private :
 		{1.0f, 0.65, 0.0f, 1.0f} // orange
 	};
 
-	inline static constexpr glm::vec3 FACES_ROTATION_AXIS[NUM_FACES]
+	static constexpr glm::vec3 FACES_ROTATION_AXIS[NUM_FACES]
 	{
 		{1.0f, 0.0f, 0.0f},
 		{-1.0f, 0.0f, 0.0f},
@@ -102,7 +104,10 @@ private :
 		{0.0f, 0.0f, -1.0f}
 	};
 
-	inline static constexpr float VOX_SPACING = 1.3f;
+	static constexpr float VOX_SPACING = 1.3f;
+	static constexpr float HIGHLIGHT_VOX_SPACING = 1.5f;
+
+	float currentVoxSpacing;
 
 	glm::vec3 vertexPositions[VOX_NUM_VERTS];
 	unsigned int vertexIndices[VOX_NUM_INDICES];
@@ -130,7 +135,7 @@ private :
 	float faceRotationRads;
 
 	void rotateFaceVoxIndices(VoxIndexRotation rotation);
-	float getPrincipleAngle(float radians);
+	float getPrincipleAngle(float radians) const;
 
 public :
 	Face selectedFace;
@@ -146,6 +151,8 @@ public :
 	bool isSnapped() const;
 	void snapFace();
 	void rotateFace(float radians);
+	void highlightFace();
+	void unhighlightFace();
 };
 
 #endif

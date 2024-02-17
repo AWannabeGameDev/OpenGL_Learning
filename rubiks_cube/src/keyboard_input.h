@@ -2,6 +2,7 @@
 #define KEYBOARD_INPUT_H
 
 #include <unordered_map>
+
 #include <GLFW/glfw3.h>
 
 class KeyboardInput
@@ -25,15 +26,15 @@ public :
 
 	void update();
 
-	bool keyJustPressed(const char* keyName);
-	bool keyPressed(const char* keyName);
-	bool keyJustReleased(const char* keyName);
-	bool keyReleased(const char* keyName);
+	bool keyJustPressed(const char* keyName) const;
+	bool keyPressed(const char* keyName) const;
+	bool keyJustReleased(const char* keyName) const;
+	bool keyReleased(const char* keyName) const;
 
-	bool anyKeyJustPressed();
-	bool anyKeyPressed();
-	bool anyKeyJustReleased();
-	bool anyKeyReleased();
+	bool anyKeyJustPressed() const;
+	bool anyKeyPressed() const;
+	bool anyKeyJustReleased() const;
+	bool anyKeyReleased() const;
 };
 
 #endif

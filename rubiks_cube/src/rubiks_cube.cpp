@@ -1,8 +1,6 @@
 #include "rubiks_cube.h"
 #include "models.h"
 
-#include <stdio.h>
-
 void RubiksCube::rotateFaceVoxIndices(VoxIndexRotation rotation)
 {
 	const Index* face = FACES_POS_INDEX[selectedFace];
@@ -47,7 +45,7 @@ void RubiksCube::rotateFaceVoxIndices(VoxIndexRotation rotation)
 	}
 }
 
-float RubiksCube::getPrincipleAngle(float radians)
+float RubiksCube::getPrincipleAngle(float radians) const
 {
 	float inRange = fmodf(radians, glm::radians(360.0f));
 	float mag = fabsf(inRange);
@@ -59,6 +57,7 @@ float RubiksCube::getPrincipleAngle(float radians)
 }
 
 RubiksCube::RubiksCube() :
+	currentVoxSpacing{VOX_SPACING},
 	colors{}, voxTransforms{}, posToVoxIndex{}, 
 	snapped{true}, faceRotationRads{0.0f}, selectedFace{FACE_POS_X}, globalTransform{}
 {
@@ -82,6 +81,10 @@ RubiksCube::RubiksCube() :
 				voxFaceColorsIndexed[voxIndex.x][voxIndex.y][voxIndex.z][face][vertex] = FACE_COLORS[face];
 		}
 	}
+
+	Index posIndex{0, 0, 0};
+	Index voxIndex{1, 1, 1};
+	posToVoxIndex[posIndex] = voxIndex;
 }
 
 const glm::vec4* RubiksCube::getColors() const
@@ -109,8 +112,6 @@ void RubiksCube::snapFace()
 	float rotatedDegs = glm::degrees(getPrincipleAngle(faceRotationRads));
 	float rotatedDegsMag = fabsf(rotatedDegs);
 
-	printf("%f\n", rotatedDegs);
-
 	float remainingRotationRads;
 
 	if((rotatedDegsMag <= 180.0f) && (rotatedDegsMag >= 135.0f))
@@ -133,13 +134,12 @@ void RubiksCube::snapFace()
 		remainingRotationRads = glm::radians(-rotatedDegs);
 	}
 
-	for(const Index& position : FACES_POS_INDEX[selectedFace])
+	for(const Index& posIndex : FACES_POS_INDEX[selectedFace])
 	{
-		Index voxIndex = posToVoxIndex[position];
+		const Index& voxIndex = posToVoxIndex[posIndex];
 		Transform& voxTransform = voxTransformsIndexed[voxIndex.x][voxIndex.y][voxIndex.z];
 
-		voxTransform.position = position;
-		voxTransform.position *= VOX_SPACING;
+		voxTransform.position = currentVoxSpacing * glm::vec3{posIndex};
 		voxTransform.rotation = glm::angleAxis(remainingRotationRads, FACES_ROTATION_AXIS[selectedFace]) 
 								* voxTransform.rotation;
 	}
@@ -152,9 +152,9 @@ void RubiksCube::rotateFace(float radians)
 	glm::quat rotation = glm::angleAxis(radians, FACES_ROTATION_AXIS[selectedFace]);
 	faceRotationRads += radians;
 
-	for(const Index& positionIndex : FACES_POS_INDEX[selectedFace])
+	for(const Index& posIndex : FACES_POS_INDEX[selectedFace])
 	{
-		const Index& voxIndex = posToVoxIndex[positionIndex];
+		const Index& voxIndex = posToVoxIndex.at(posIndex);
 		Transform& voxTransform = voxTransformsIndexed[voxIndex.x][voxIndex.y][voxIndex.z];
 
 		voxTransform.rotation = rotation * voxTransform.rotation;
@@ -162,6 +162,32 @@ void RubiksCube::rotateFace(float radians)
 	}
 
 	snapped = false;
+}
+
+void RubiksCube::highlightFace()
+{
+	for(const Index& posIndex : FACES_POS_INDEX[selectedFace])
+	{
+		const Index& voxIndex = posToVoxIndex.at(posIndex);
+		Transform& voxTransform = voxTransformsIndexed[voxIndex.x][voxIndex.y][voxIndex.z];
+
+		voxTransform.position = HIGHLIGHT_VOX_SPACING * glm::vec3{posIndex};
+	}
+
+	currentVoxSpacing = HIGHLIGHT_VOX_SPACING;
+}
+
+void RubiksCube::unhighlightFace()
+{
+	for(const Index& posIndex : FACES_POS_INDEX[selectedFace])
+	{
+		const Index& voxIndex = posToVoxIndex.at(posIndex);
+		Transform& voxTransform = voxTransformsIndexed[voxIndex.x][voxIndex.y][voxIndex.z];
+
+		voxTransform.position = VOX_SPACING * glm::vec3{posIndex};
+	}
+
+	currentVoxSpacing = VOX_SPACING;
 }
 
 const Transform* RubiksCube::getTransforms() const

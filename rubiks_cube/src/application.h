@@ -18,6 +18,7 @@ private :
 	Camera camera;
 
 	RubiksCube rubiksCube;
+	const float ROTATION_SPEED_RADS;
 
 	unsigned int positionVbo, colorVbo, ebo, vao;
 	unsigned int shaderProgram;

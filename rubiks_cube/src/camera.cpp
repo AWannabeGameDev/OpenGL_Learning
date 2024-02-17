@@ -1,8 +1,7 @@
 #include "camera.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
-
-#include <iostream>
 
 Camera::Camera(float fov, float aspectRatio, float near, float far) :
 	position{}, i{1.0f, 0.0f, 0.0f}, j{0.0f, 1.0f, 0.0f}, k{0.0f, 0.0f, 1.0f},
@@ -51,8 +50,6 @@ void Camera::rotateGlobal(const glm::vec3& globalAxis, float radians)
 void Camera::rotateLocal(const glm::vec3& localAxis, float radians)
 {
 	glm::vec3 globalAxis = glm::vec3{inverseRotationMatrix() * glm::vec4{localAxis, 1.0f}};
-
-	//std::cout << glm::to_string(f_inverseRotationMatrix()) << '\n';
 
 	rotateGlobal(globalAxis, radians);
 }

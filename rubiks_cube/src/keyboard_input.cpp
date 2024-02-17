@@ -32,12 +32,12 @@ void KeyboardInput::update()
 	}
 }
 
-bool KeyboardInput::keyJustPressed(const char* keyName)
+bool KeyboardInput::keyJustPressed(const char* keyName) const
 {
 	auto it = keyNameMap.find(keyName);
 	if(it != keyNameMap.end())
 	{
-		const KeyStatus& status = keyStatusMap[it->second];
+		const KeyStatus& status = keyStatusMap.at(it->second);
 		return status.current && !status.previous;
 	}
 	else
@@ -46,12 +46,12 @@ bool KeyboardInput::keyJustPressed(const char* keyName)
 	}
 }
 
-bool KeyboardInput::keyPressed(const char* keyName)
+bool KeyboardInput::keyPressed(const char* keyName) const
 {
 	auto it = keyNameMap.find(keyName);
 	if(it != keyNameMap.end())
 	{
-		const KeyStatus& status = keyStatusMap[it->second];
+		const KeyStatus& status = keyStatusMap.at(it->second);
 		return status.current;
 	}
 	else
@@ -60,12 +60,12 @@ bool KeyboardInput::keyPressed(const char* keyName)
 	}
 }
 
-bool KeyboardInput::keyJustReleased(const char* keyName)
+bool KeyboardInput::keyJustReleased(const char* keyName) const
 {
 	auto it = keyNameMap.find(keyName);
 	if(it != keyNameMap.end())
 	{
-		const KeyStatus& status = keyStatusMap[it->second];
+		const KeyStatus& status = keyStatusMap.at(it->second);
 		return !status.current && status.previous;
 	}
 	else
@@ -74,12 +74,12 @@ bool KeyboardInput::keyJustReleased(const char* keyName)
 	}
 }
 
-bool KeyboardInput::keyReleased(const char* keyName)
+bool KeyboardInput::keyReleased(const char* keyName) const
 {
 	auto it = keyNameMap.find(keyName);
 	if(it != keyNameMap.end())
 	{
-		const KeyStatus& status = keyStatusMap[it->second];
+		const KeyStatus& status = keyStatusMap.at(it->second);
 		return !status.current;
 	}
 	else
@@ -88,7 +88,7 @@ bool KeyboardInput::keyReleased(const char* keyName)
 	}
 }
 
-bool KeyboardInput::anyKeyJustPressed()
+bool KeyboardInput::anyKeyJustPressed() const
 {
 	for(auto& [key, status] : keyStatusMap)
 	{
@@ -98,7 +98,7 @@ bool KeyboardInput::anyKeyJustPressed()
 	return false;
 }
 
-bool KeyboardInput::anyKeyPressed()
+bool KeyboardInput::anyKeyPressed() const
 {
 	for(auto& [key, status] : keyStatusMap)
 	{
@@ -108,7 +108,7 @@ bool KeyboardInput::anyKeyPressed()
 	return false;
 }
 
-bool KeyboardInput::anyKeyJustReleased()
+bool KeyboardInput::anyKeyJustReleased() const
 {
 	for(auto& [key, status] : keyStatusMap)
 	{
@@ -118,7 +118,7 @@ bool KeyboardInput::anyKeyJustReleased()
 	return false;
 }
 
-bool KeyboardInput::anyKeyReleased()
+bool KeyboardInput::anyKeyReleased() const
 {
 	for(auto& [key, status] : keyStatusMap)
 	{

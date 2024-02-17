@@ -13,6 +13,7 @@ struct Transform
 	Transform();
 
 	glm::mat4 matrix() const;
+	Transform operator*(const Transform& other) const;
 };
 
 #endif
