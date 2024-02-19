@@ -1,15 +1,10 @@
-#include "util.h"
+#include "utility/util.h"
 
-#include "stb_image.h"
+#include "stb_image/stb_image.h"
 
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
-
-void frameBufferResize(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
 
 void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, 
 					 GLsizei length, const GLchar* message, const void* userParam)
@@ -47,14 +42,6 @@ GLFWwindow* initialize(int windowWidth, int windowHeight, const char* title, int
 	printf("Using OpenGL version : %s\n", glGetString(GL_VERSION));
 
 	return window;
-}
-
-void processInputs(GLFWwindow* window)
-{
-	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
 }
 
 unsigned int compileShader(unsigned int type, const char* path)

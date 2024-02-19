@@ -1,13 +1,13 @@
-#include "util.h"
+#include "utility/util.h"
 #include "models.h"
-#include "transform.h"
-#include "camera.h"
+#include "utility/transform.h"
+#include "utility/camera.h"
 
 #include <stdio.h>
 #include <iostream>
 #include <time.h>
 
-#include <stb_image.h>
+#include <stb_image/stb_image.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -60,7 +60,6 @@ int main()
 	const int SCREEN_HEIGHT = 720;
 	GLFWwindow* window = initialize(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGL", 4, 6);
 
-	glfwSetFramebufferSizeCallback(window, frameBufferResize);
 	glDebugMessageCallback(glDebugCallback, nullptr);
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glEnable(GL_DEPTH_TEST);
@@ -152,8 +151,6 @@ int main()
 		prevTime = currentTime;
 
 		accumulator += deltaTime;
-
-		processInputs(window); 
 
 		if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
