@@ -1,7 +1,8 @@
 #include "utility/util.h"
-#include "models.h"
+#include "utility/models.h"
 #include "utility/transform.h"
 #include "utility/camera.h"
+#include <stb_image/load.h>
 
 #include <stdio.h>
 #include <iostream>

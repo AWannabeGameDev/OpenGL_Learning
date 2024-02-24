@@ -1,10 +1,9 @@
 #include "utility/util.h"
-
 #include "stb_image/stb_image.h"
-
-#include <stdio.h>
+#include <stdio.h> 
 #include <fstream>
 #include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 
 void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, 
 					 GLsizei length, const GLchar* message, const void* userParam)
@@ -12,7 +11,7 @@ void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
 	printf("OpenGL debug message : %s\n", message);
 }
 
-GLFWwindow* initialize(int windowWidth, int windowHeight, const char* title, int majorVersion, int minorVersion)
+GLFWwindow* initialize(int windowWidth, int windowHeight, std::string_view title, int majorVersion, int minorVersion)
 {
 	if(glfwInit() != GLFW_TRUE)
 	{
@@ -24,7 +23,7 @@ GLFWwindow* initialize(int windowWidth, int windowHeight, const char* title, int
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
-	GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, title, nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, title.data(), nullptr, nullptr);
 	if(!window)
 	{
 		printf("Failed to create window\n");
@@ -44,10 +43,10 @@ GLFWwindow* initialize(int windowWidth, int windowHeight, const char* title, int
 	return window;
 }
 
-unsigned int compileShader(unsigned int type, const char* path)
+unsigned int compileShader(unsigned int type, std::string_view path)
 {
 	std::ifstream file;
-	file.open(path);
+	file.open(path.data());
 	std::stringstream sstream;
 	std::string source;
 
@@ -92,7 +91,7 @@ unsigned int compileShader(unsigned int type, const char* path)
 	return shader;
 }
 
-unsigned int createShaderProgram(const char* vertexShaderPath, const char* fragmentShaderPath)
+unsigned int createShaderProgram(std::string_view vertexShaderPath, std::string_view fragmentShaderPath)
 {
 	unsigned int vshader = compileShader(GL_VERTEX_SHADER, vertexShaderPath);
 	unsigned int fshader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
@@ -130,11 +129,22 @@ unsigned int createShaderProgram(const char* vertexShaderPath, const char* fragm
 	return program;
 }
 
-TextureData loadTexture(const char* path)
+void setUniform(unsigned int shaderID, std::string_view fieldName, const glm::vec3& vec3) 
 {
-	int imWidth, imHeight, imNumChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* imData = stbi_load(path, &imWidth, &imHeight, &imNumChannels, 0);
+	glUniform3fv(glGetUniformLocation(shaderID, fieldName.data()), 1, &vec3[0]);
+}
 
-	return {imWidth, imHeight, imNumChannels, imData};
+void setUniform(unsigned int shaderID, std::string_view fieldName, const glm::vec4& vec4)
+{
+	glUniform4fv(glGetUniformLocation(shaderID, fieldName.data()), 1, &vec4[0]);
+}
+
+void setUniform(unsigned int shaderID, std::string_view fieldName, float flt)
+{
+	glUniform1f(glGetUniformLocation(shaderID, fieldName.data()), flt);
+}
+
+void setUniform(unsigned int shaderID, std::string_view fieldName, const glm::mat4& mat4)
+{
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, fieldName.data()), 1, GL_FALSE, glm::value_ptr(mat4));
 }
