@@ -5,6 +5,7 @@
 #include <utility/transform.h>
 #include <utility/camera.h>
 #include <utility/lighting.h>
+#include <utility/keyboard_input.h>
 
 class Application
 {
@@ -13,6 +14,10 @@ private :
 	const char* WINDOW_TITLE;
 	GLFWwindow* window;
 
+	KeyboardInput keys;
+	float prevTime;
+	const float CAMERA_SPEED;
+
 	unsigned int cubeVAO, cubeVBO, cubeEBO;
 
 	unsigned int lightShader;
@@ -20,11 +25,17 @@ private :
 
 	unsigned int objectShader;
 	Material material;
-	LightSource lightSrc;
+	static constexpr int DIFFUSE_MAP_INDEX = 0,
+						 SPECULAR_MAP_INDEX = 1,
+						 EMISSION_MAP_INDEX = 2;
+
+	glm::vec4 ambientColor;
+	PointLight pointLightSrc;
+	DirectionalLight dirLightSrc;
 
 	Camera camera;
-
-	Transform object, lightSource;
+	Transform objectTransforms[20]; 
+	Transform lightSrcTransform;
 
 public :
 	Application();

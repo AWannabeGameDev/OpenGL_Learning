@@ -148,3 +148,13 @@ void setUniform(unsigned int shaderID, std::string_view fieldName, const glm::ma
 {
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, fieldName.data()), 1, GL_FALSE, glm::value_ptr(mat4));
 }
+
+void setUniform(unsigned int shaderID, std::string_view fieldName, const glm::mat3& mat3)
+{
+	glUniformMatrix3fv(glGetUniformLocation(shaderID, fieldName.data()), 1, GL_FALSE, glm::value_ptr(mat3));
+}
+
+void setUniform(unsigned int shaderID, std::string_view fieldName, int integ)
+{
+	glUniform1i(glGetUniformLocation(shaderID, fieldName.data()), integ);
+}

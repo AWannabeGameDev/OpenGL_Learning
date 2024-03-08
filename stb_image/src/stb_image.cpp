@@ -3,11 +3,11 @@
 
 #include "stb_image/load.h"
 
-TextureData loadTexture(const char* path)
+TextureData loadTexture(std::string_view path)
 {
 	int imWidth, imHeight, imNumChannels;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* imData = stbi_load(path, &imWidth, &imHeight, &imNumChannels, 0);
+	unsigned char* imData = stbi_load(path.data(), &imWidth, &imHeight, &imNumChannels, 0);
 
 	return {imWidth, imHeight, imNumChannels, imData};
 }

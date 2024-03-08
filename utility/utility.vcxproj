@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\keyboard_input.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\util.cpp" />
   </ItemGroup>

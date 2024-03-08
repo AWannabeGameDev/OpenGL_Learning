@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="include\stb_image\load.h" />
     <ClInclude Include="include\utility\camera.h" />
+    <ClInclude Include="include\utility\keyboard_input.h" />
     <ClInclude Include="include\utility\lighting.h" />
     <ClInclude Include="include\utility\models.h" />
     <ClInclude Include="include\utility\transform.h" />
