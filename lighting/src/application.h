@@ -6,6 +6,7 @@
 #include <utility/camera.h>
 #include <utility/lighting.h>
 #include <utility/keyboard_input.h>
+#include <utility/mouse_input.h>
 
 class Application
 {
@@ -15,8 +16,10 @@ private :
 	GLFWwindow* window;
 
 	KeyboardInput keys;
+	MouseInput mouse;
 	float prevTime;
 	const float CAMERA_SPEED;
+	const float CAMERA_ROTATE_SPEED;
 
 	unsigned int cubeVAO, cubeVBO, cubeEBO;
 
@@ -32,6 +35,7 @@ private :
 	glm::vec4 ambientColor;
 	PointLight pointLightSrc;
 	DirectionalLight dirLightSrc;
+	ConeLight coneLightSrc;
 
 	Camera camera;
 	Transform objectTransforms[20]; 

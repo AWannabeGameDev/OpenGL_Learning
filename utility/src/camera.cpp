@@ -5,18 +5,14 @@
 #include <iostream>
 
 Camera::Camera(float fov, float aspectRatio, float near, float far) :
-	position{}, i{1.0f, 0.0f, 0.0f}, j{0.0f, 1.0f, 0.0f}, k{0.0f, 0.0f, 1.0f},
+	position{0.0f, 0.0f, 0.0f}, 
+	rotation{1.0f, 0.0f, 0.0f, 0.0f}, 
 	projection{glm::perspective(fov, aspectRatio, near, far)}
 {}
 
-glm::mat4 Camera::matrix() const
-{
-	return projection * viewMatrix();
-}
-
 glm::mat4 Camera::viewMatrix() const
 {
-	return f_rotationMatrix() * glm::translate(glm::mat4{1.0f}, -position);
+	return (glm::toMat4(glm::inverse(rotation))) * glm::translate(glm::mat4{1.0f}, -position);
 }
 
 const glm::mat4& Camera::projectionMatrix() const
@@ -26,49 +22,25 @@ const glm::mat4& Camera::projectionMatrix() const
 
 const glm::vec3 Camera::right() const
 {
-	return i;
+	return rotation * glm::vec3{1.0f, 0.0f, 0.0f};
 }
 
 const glm::vec3 Camera::up() const
 {
-	return j;
+	return rotation * glm::vec3{0.0f, 1.0f, 0.0f};
 }
 
 const glm::vec3 Camera::behind() const
 {
-	return k;
+	return rotation * glm::vec3{0.0f, 0.0f, 1.0f};
 }
 
 void Camera::rotateGlobal(const glm::vec3& globalAxis, float radians)
 {
-	glm::mat4 rotation = glm::rotate(glm::mat4{1.0f}, radians, globalAxis);
-
-	j = glm::vec3{rotation * glm::vec4{j, 1.0f}};
-	i = glm::vec3{rotation * glm::vec4{i, 1.0f}};
-	k = glm::vec3{rotation * glm::vec4{k, 1.0f}};
+	rotation = glm::angleAxis(radians, globalAxis) * rotation;
 }
 
 void Camera::rotateLocal(const glm::vec3& localAxis, float radians)
 {
-	glm::vec3 globalAxis = glm::vec3{f_inverseRotationMatrix() * glm::vec4{localAxis, 1.0f}};
-
-	//std::cout << glm::to_string(f_inverseRotationMatrix()) << '\n';
-
-	rotateGlobal(globalAxis, radians);
-}
-
-glm::mat4 Camera::f_rotationMatrix() const
-{
-	return {glm::vec4{i.x, j.x, k.x, 0.0f},
-			glm::vec4{i.y, j.y, k.y, 0.0f},
-			glm::vec4{i.z, j.z, k.z, 0.0f},
-			glm::vec4{0.f, 0.f, 0.f, 1.0f}};
-}
-
-glm::mat4 Camera::f_inverseRotationMatrix() const
-{
-	return {glm::vec4{i, 0.0f},
-			glm::vec4{j, 0.0f},
-			glm::vec4{k, 0.0f},
-			glm::vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+	rotateGlobal(rotation * localAxis, radians);
 }

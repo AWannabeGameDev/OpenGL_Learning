@@ -15,7 +15,7 @@ static constexpr glm::vec2 texCoords[24] =
 
 float randrange(float min, float max)
 {
-	return ((float)rand() * (max - min) / RAND_MAX) + min;
+	return (((float)rand() * (max - min) / RAND_MAX) + min);
 }
 
 Application::Application() :
@@ -23,11 +23,12 @@ Application::Application() :
 	window{initialize(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, 4, 6)},
 
 	keys{window},
+	mouse{window},
 	prevTime{0.0f},
+	CAMERA_SPEED{7.0f}, CAMERA_ROTATE_SPEED{glm::radians(180.0f)},
 
 	lightShader{createShaderProgram("../res/light_vert_shader.glsl", "../res/light_frag_shader.glsl")},
 	lightColor{1.0f, 1.0f, 1.0f, 1.0f},
-	CAMERA_SPEED{7.0f},
 
 	objectShader{createShaderProgram("../res/obj_vert_shader.glsl", "../res/obj_frag_shader.glsl")},
 	material{loadTexture("../res/container_diffuse.png"), loadTexture("../res/container_specular.png"), 32.0f,
@@ -36,6 +37,8 @@ Application::Application() :
 	ambientColor{0.1f, 0.1f, 0.1f, 1.0f},
 	pointLightSrc{{2.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, lightColor, 1.0f, 0.14f, 0.07f},
 	dirLightSrc{{1.0f, -1.0f, -1.0f}, {0.4f, 0.4f, 0.4f, 1.0f}, {0.2f, 0.2f, 0.2f, 1.0f}},
+	coneLightSrc{{0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, cosf(glm::radians(15.0f)),
+				 {0.5f, 0.5f, 0.5f, 1.0f}, {0.3f, 0.3f, 0.3f, 1.0f}},
 
 	camera{glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f},
 
@@ -118,7 +121,7 @@ Application::Application() :
 	srand((unsigned int)std::time(0));
 	for(Transform& transform : objectTransforms)
 	{
-		transform.position = {randrange(-10.0f, 10.0f), randrange(-10.0f, 10.0f), randrange(-10.0f, 10.0f)};
+		transform.position = {randrange(-5.0f, 5.0f), randrange(-5.0f, 5.0f), randrange(-5.0f, 5.0f)};
 		transform.rotation = glm::angleAxis(randrange(glm::radians(-180.0f), glm::radians(180.0f)),
 											glm::normalize(glm::vec3{randrange(-1.0f, 1.0f), 
 																	 randrange(-1.0f, 1.0f), 
@@ -148,6 +151,7 @@ void Application::run()
 
 		glfwPollEvents();
 		keys.update();
+		mouse.update();
 
 		if(keys.keyPressed("FORWARD"))
 			camera.position += -camera.behind() * CAMERA_SPEED * deltaTime;
@@ -157,6 +161,17 @@ void Application::run()
 			camera.position += -camera.right() * CAMERA_SPEED * deltaTime;
 		else if(keys.keyPressed("RIGHT"))
 			camera.position += camera.right() * CAMERA_SPEED * deltaTime;
+
+		glm::vec3 camUp = camera.up();
+		glm::vec3 camRight = camera.right();
+
+		float mouseMoveX = mouse.getMouseMovementX();
+		if(mouseMoveX != 0)
+			camera.rotateGlobal(camUp, -mouseMoveX * CAMERA_ROTATE_SPEED * deltaTime);
+
+		float mouseMoveY = mouse.getMouseMovementY();
+		if(mouseMoveY != 0)
+			camera.rotateGlobal(camRight, mouseMoveY * CAMERA_ROTATE_SPEED * deltaTime);
 
 		lightColor = glm::rotate(glm::mat4{1.0f}, 0.001f, {1.0f, 1.0f, 0.0f}) * lightColor;
 		pointLightSrc.specularColor = lightColor;
@@ -185,6 +200,11 @@ void Application::run()
 		setUniform(objectShader, "u_dirLightSrc.direction", dirLightSrc.direction);
 		setUniform(objectShader, "u_dirLightSrc.diffuseColor", dirLightSrc.diffuseColor);
 		setUniform(objectShader, "u_dirLightSrc.specularColor", dirLightSrc.specularColor);
+		setUniform(objectShader, "u_coneLightSrc.direction", -camera.behind());
+		setUniform(objectShader, "u_coneLightSrc.position", camera.position);
+		setUniform(objectShader, "u_coneLightSrc.angleCosine", coneLightSrc.angleCosine);
+		setUniform(objectShader, "u_coneLightSrc.diffuseColor", coneLightSrc.diffuseColor);
+		setUniform(objectShader, "u_coneLightSrc.diffuseColor", coneLightSrc.specularColor);
 		setUniform(objectShader, "u_viewPosWorld", camera.position);
 
 		for(Transform& transform : objectTransforms)

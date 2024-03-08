@@ -4,15 +4,15 @@ KeyboardInput::KeyboardInput(GLFWwindow* glfwWindow) :
 	keyNameMap{}, keyStatusMap{}, window{glfwWindow}
 {}
 
-void KeyboardInput::setKeybind(const char* keyName, int glfwKey)
+void KeyboardInput::setKeybind(std::string_view keyName, int glfwKey)
 {
-	keyNameMap[keyName] = glfwKey;
+	keyNameMap[std::string{keyName}] = glfwKey;
 	keyStatusMap[glfwKey] = {false, false};
 }
 
-void KeyboardInput::removeKeybind(const char* keyName)
+void KeyboardInput::removeKeybind(std::string_view keyName)
 {
-	auto it = keyNameMap.find(keyName);
+	auto it = keyNameMap.find(std::string{keyName});
 	if(it != keyNameMap.end())
 	{
 		keyStatusMap.erase(it->second);
@@ -32,9 +32,9 @@ void KeyboardInput::update()
 	}
 }
 
-bool KeyboardInput::keyJustPressed(const char* keyName) const
+bool KeyboardInput::keyJustPressed(std::string_view keyName) const
 {
-	auto it = keyNameMap.find(keyName);
+	auto it = keyNameMap.find(std::string{keyName});
 	if(it != keyNameMap.end())
 	{
 		const KeyStatus& status = keyStatusMap.at(it->second);
@@ -46,9 +46,9 @@ bool KeyboardInput::keyJustPressed(const char* keyName) const
 	}
 }
 
-bool KeyboardInput::keyPressed(const char* keyName) const
+bool KeyboardInput::keyPressed(std::string_view keyName) const
 {
-	auto it = keyNameMap.find(keyName);
+	auto it = keyNameMap.find(std::string{keyName});
 	if(it != keyNameMap.end())
 	{
 		const KeyStatus& status = keyStatusMap.at(it->second);
@@ -60,9 +60,9 @@ bool KeyboardInput::keyPressed(const char* keyName) const
 	}
 }
 
-bool KeyboardInput::keyJustReleased(const char* keyName) const
+bool KeyboardInput::keyJustReleased(std::string_view keyName) const
 {
-	auto it = keyNameMap.find(keyName);
+	auto it = keyNameMap.find(std::string{keyName});
 	if(it != keyNameMap.end())
 	{
 		const KeyStatus& status = keyStatusMap.at(it->second);
@@ -74,9 +74,9 @@ bool KeyboardInput::keyJustReleased(const char* keyName) const
 	}
 }
 
-bool KeyboardInput::keyReleased(const char* keyName) const
+bool KeyboardInput::keyReleased(std::string_view keyName) const
 {
-	auto it = keyNameMap.find(keyName);
+	auto it = keyNameMap.find(std::string{keyName});
 	if(it != keyNameMap.end())
 	{
 		const KeyStatus& status = keyStatusMap.at(it->second);

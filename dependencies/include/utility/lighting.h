@@ -34,7 +34,7 @@ struct ConeLight
 {
 	glm::vec3 direction;
 	glm::vec3 position;
-	float angle;
+	float angleCosine;
 	glm::vec4 diffuseColor;
 	glm::vec4 specularColor;
 };
