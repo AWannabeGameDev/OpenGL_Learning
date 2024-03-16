@@ -26,6 +26,9 @@ struct ConeLight
 	float angleCosine;
 	vec4 diffuseColor;
 	vec4 specularColor;
+	float attenConst;
+	float attenLinear;
+	float attenQuad;
 };
 
 struct DirectionalLight
@@ -40,6 +43,9 @@ in vec3 fragWorldNormal;
 in vec2 fragTexCoord;
 
 uniform Material u_material;
+uniform sampler2D diffuse0;
+uniform sampler2D specular0;
+uniform sampler2D emissive0;
 uniform vec3 u_viewPosWorld;
 
 uniform vec4 u_ambientColor;
@@ -63,7 +69,7 @@ vec4 calcPointLight(PointLight light)
 	else 
 		diffuseLevel *= attenRatio;
 
-	vec4 diffuseColor = light.diffuseColor * vec4(texture(u_material.diffuseMap, fragTexCoord)) * diffuseLevel;
+	vec4 diffuseColor = light.diffuseColor * texture(diffuse0, fragTexCoord) * diffuseLevel;
 
 	vec3 viewDisp = u_viewPosWorld - fragWorldCoord;
 	vec3 reflectedRay = reflect(-lightDisp, fragWorldNormal);
@@ -73,7 +79,7 @@ vec4 calcPointLight(PointLight light)
 	else 
 		specularLevel = pow(specularLevel, u_material.shininess) * attenRatio;
 
-	vec4 specularColor = light.specularColor * vec4(texture(u_material.specularMap, fragTexCoord)) * specularLevel;
+	vec4 specularColor = light.specularColor * texture(specular0, fragTexCoord) * specularLevel;
 
 	return (diffuseColor + specularColor);
 }
@@ -84,7 +90,7 @@ vec4 calcDirectionalLight(DirectionalLight light)
 	if(diffuseLevel < 0) 
 		diffuseLevel = 0;
 
-	vec4 diffuseColor = light.diffuseColor * vec4(texture(u_material.diffuseMap, fragTexCoord)) * diffuseLevel;
+	vec4 diffuseColor = light.diffuseColor * texture(diffuse0, fragTexCoord) * diffuseLevel;
 
 	vec3 viewDisp = u_viewPosWorld - fragWorldCoord;
 	vec3 reflectedRay = reflect(light.direction, fragWorldNormal);
@@ -92,7 +98,7 @@ vec4 calcDirectionalLight(DirectionalLight light)
 	if(specularLevel < 0) 
 		specularLevel = 0;
 
-	vec4 specularColor = light.specularColor * vec4(texture(u_material.specularMap, fragTexCoord)) * specularLevel;
+	vec4 specularColor = light.specularColor * texture(specular0, fragTexCoord) * specularLevel;
 
 	return (diffuseColor + specularColor);
 }
@@ -101,6 +107,8 @@ vec4 calcConeLight(ConeLight light)
 {
 	vec3 lightDisp = light.position - fragWorldCoord;
 	float lightDist = length(lightDisp);
+	float attenRatio = 1 / (light.attenConst + (light.attenLinear * lightDist) + 
+						(light.attenQuad * lightDist * lightDist));
 
 	float fragDirCosine = dot(-lightDisp, light.direction) / (lightDist * length(light.direction));
 	if(fragDirCosine < light.angleCosine)
@@ -110,29 +118,34 @@ vec4 calcConeLight(ConeLight light)
 
 	if(diffuseLevel < 0) 
 		diffuseLevel = 0;
+	else 
+		diffuseLevel *= attenRatio;
 
-	vec4 diffuseColor = light.diffuseColor * vec4(texture(u_material.diffuseMap, fragTexCoord)) * diffuseLevel;
+	vec4 diffuseColor = light.diffuseColor * texture(diffuse0, fragTexCoord) * diffuseLevel;
 
 	vec3 viewDisp = u_viewPosWorld - fragWorldCoord;
 	vec3 reflectedRay = reflect(-lightDisp, fragWorldNormal);
 	float specularLevel = dot(viewDisp, reflectedRay) / (length(viewDisp) * length(reflectedRay));
-	if(specularLevel < 0) specularLevel = 0;
+	if(specularLevel < 0) 
+		specularLevel = 0;
+	else
+		specularLevel *= attenRatio;
 
-	vec4 specularColor = light.specularColor * vec4(texture(u_material.specularMap, fragTexCoord)) * specularLevel;
+	vec4 specularColor = light.specularColor * texture(specular0, fragTexCoord) * specularLevel;
 
 	return (diffuseColor + specularColor);
 }
 
 vec4 calcEmissionColor()
 {
-	return texture(u_material.emissionMap, fragTexCoord) * u_material.emissionColor;
+	return texture(emissive0, fragTexCoord) * u_material.emissionColor;
 }
 
 void main()
 {
-	vec4 finalColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	vec4 finalColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	finalColor += u_ambientColor * vec4(texture(u_material.diffuseMap, fragTexCoord));
+	finalColor += u_ambientColor * vec4(texture(diffuse0, fragTexCoord));
 	finalColor += calcPointLight(u_pointLightSrc);
 	finalColor += calcDirectionalLight(u_dirLightSrc);
 	finalColor += calcConeLight(u_coneLightSrc);

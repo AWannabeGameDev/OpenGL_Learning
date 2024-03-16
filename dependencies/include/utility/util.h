@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <string_view>
 #include <glm/glm.hpp>
+#include <utility/lighting.h>
 
 void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, 
 					 GLsizei length, const GLchar* message, const void* userParam);
@@ -20,5 +21,8 @@ void setUniform(unsigned int shaderID, std::string_view fieldName, float flt);
 void setUniform(unsigned int shaderID, std::string_view fieldName, const glm::mat4& mat4);
 void setUniform(unsigned int shaderID, std::string_view fieldName, const glm::mat3& mat3);
 void setUniform(unsigned int shaderID, std::string_view fieldName, int integ);
+void setUniform(unsigned int shaderID, std::string_view fieldName, const PointLight& pointLight);
+void setUniform(unsigned int shaderID, std::string_view fieldName, const DirectionalLight& dirLight);
+void setUniform(unsigned int shaderID, std::string_view fieldName, const ConeLight& coneLight);
 
 #endif

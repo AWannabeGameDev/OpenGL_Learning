@@ -6,10 +6,10 @@
 
 struct Material
 {
-	TextureData diffuseMap;
-	TextureData specularMap;
+	unsigned int diffuseMapID;
+	unsigned int specularMapID;
 	float shininess;
-	TextureData emissionMap;
+	unsigned int emissionMapID;
 	glm::vec4 emissionColor;
 };
 
@@ -37,6 +37,9 @@ struct ConeLight
 	float angleCosine;
 	glm::vec4 diffuseColor;
 	glm::vec4 specularColor;
+	float attenConst;
+	float attenLinear;
+	float attenQuad;
 };
 
 #endif

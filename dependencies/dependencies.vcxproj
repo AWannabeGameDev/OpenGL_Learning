@@ -155,6 +155,7 @@
     <ClInclude Include="include\utility\camera.h" />
     <ClInclude Include="include\utility\keyboard_input.h" />
     <ClInclude Include="include\utility\lighting.h" />
+    <ClInclude Include="include\utility\mesh.h" />
     <ClInclude Include="include\utility\models.h" />
     <ClInclude Include="include\utility\mouse_input.h" />
     <ClInclude Include="include\utility\transform.h" />

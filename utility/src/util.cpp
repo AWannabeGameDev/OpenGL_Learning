@@ -158,3 +158,69 @@ void setUniform(unsigned int shaderID, std::string_view fieldName, int integ)
 {
 	glUniform1i(glGetUniformLocation(shaderID, fieldName.data()), integ);
 }
+
+void setUniform(unsigned int shaderID, std::string_view fieldName, const PointLight& pointLight)
+{
+	std::string fieldNameStr = std::string{fieldName};
+
+	std::string subfieldName = fieldNameStr + ".position";
+	setUniform(shaderID, subfieldName, pointLight.position);
+
+	subfieldName = fieldNameStr + ".diffuseColor";
+	setUniform(shaderID, subfieldName, pointLight.diffuseColor);
+
+	subfieldName = fieldNameStr + ".specularColor";
+	setUniform(shaderID, subfieldName, pointLight.specularColor);
+
+	subfieldName = fieldNameStr + ".attenConst";
+	setUniform(shaderID, subfieldName, pointLight.attenConst);
+
+	subfieldName = fieldNameStr + ".attenLinear";
+	setUniform(shaderID, subfieldName, pointLight.attenLinear);
+
+	subfieldName = fieldNameStr + ".attenQuad";
+	setUniform(shaderID, subfieldName, pointLight.attenQuad);
+}
+
+void setUniform(unsigned int shaderID, std::string_view fieldName, const DirectionalLight& dirLight)
+{
+	std::string fieldNameStr = std::string{fieldName};
+
+	std::string subfieldName = fieldNameStr + ".direction";
+	setUniform(shaderID, subfieldName, dirLight.direction);
+
+	subfieldName = fieldNameStr + ".diffuseColor";
+	setUniform(shaderID, subfieldName, dirLight.diffuseColor);
+
+	subfieldName = fieldNameStr + ".specularColor";
+	setUniform(shaderID, subfieldName, dirLight.specularColor);
+}
+
+void setUniform(unsigned int shaderID, std::string_view fieldName, const ConeLight& coneLight)
+{
+	std::string fieldNameStr = std::string{fieldName};
+
+	std::string subfieldName = fieldNameStr + ".position";
+	setUniform(shaderID, subfieldName, coneLight.position);
+
+	subfieldName = fieldNameStr + ".direction";
+	setUniform(shaderID, subfieldName, coneLight.direction);
+
+	subfieldName = fieldNameStr + ".angleCosine";
+	setUniform(shaderID, subfieldName, coneLight.angleCosine);
+
+	subfieldName = fieldNameStr + ".diffuseColor";
+	setUniform(shaderID, subfieldName, coneLight.diffuseColor);
+
+	subfieldName = fieldNameStr + ".specularColor";
+	setUniform(shaderID, subfieldName, coneLight.specularColor);
+
+	subfieldName = fieldNameStr + ".attenConst";
+	setUniform(shaderID, subfieldName, coneLight.attenConst);
+
+	subfieldName = fieldNameStr + ".attenLinear";
+	setUniform(shaderID, subfieldName, coneLight.attenLinear);
+
+	subfieldName = fieldNameStr + ".attenQuad";
+	setUniform(shaderID, subfieldName, coneLight.attenQuad);
+}

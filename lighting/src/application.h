@@ -7,6 +7,7 @@
 #include <utility/lighting.h>
 #include <utility/keyboard_input.h>
 #include <utility/mouse_input.h>
+#include <utility/mesh.h>
 
 class Application
 {
@@ -19,9 +20,10 @@ private :
 	MouseInput mouse;
 	float prevTime;
 	const float CAMERA_SPEED;
-	const float CAMERA_ROTATE_SPEED;
+	const float CAMERA_SENSITIVITY;
 
 	unsigned int cubeVAO, cubeVBO, cubeEBO;
+	Mesh cubeMesh;
 
 	unsigned int lightShader;
 	glm::vec4 lightColor;
@@ -38,7 +40,7 @@ private :
 	ConeLight coneLightSrc;
 
 	Camera camera;
-	Transform objectTransforms[20]; 
+	Transform objectTransforms[100]; 
 	Transform lightSrcTransform;
 
 public :
