@@ -37,8 +37,16 @@ public :
 	Mesh();
 	~Mesh();
 
+	friend void swap(Mesh& first, Mesh& second);
+	Mesh(const Mesh& other);
+	Mesh(Mesh&& other) noexcept;
+	Mesh& operator=(Mesh other);
+
 	void updateMesh(bool verts, bool inds);
+	void setTextures(unsigned int shader);
 	void draw(unsigned int shader);
 };
+
+void swap(Mesh& first, Mesh& second);
 
 #endif

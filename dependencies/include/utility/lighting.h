@@ -2,7 +2,7 @@
 #define LIGHT_H
 
 #include <glm/glm.hpp>
-#include <stb_image/load.h>
+#include "load_image.h"
 
 struct Material
 {

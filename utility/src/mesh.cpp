@@ -2,6 +2,8 @@
 #include <GL/glew.h>
 #include <utility/util.h>
 #include <string>
+#include <format>
+#include <stdio.h>
 
 Mesh::Mesh()
 {
@@ -25,7 +27,54 @@ Mesh::~Mesh()
 {
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &ebo);
-	glDeleteBuffers(1, &vao);
+	glDeleteVertexArrays(1, &vao);
+}
+
+void swap(Mesh& first, Mesh& second)
+{
+	using std::swap;
+	swap(first.vbo, second.vbo);
+	swap(first.ebo, second.ebo);
+	swap(first.vao, second.vao);
+	swap(first.vertices, second.vertices);
+	swap(first.indices, second.indices);
+	swap(first.textures, second.textures);
+}
+
+Mesh::Mesh(const Mesh& other) :
+	vertices{other.vertices}, indices{other.indices}, textures{other.textures}
+{
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+	glVertexAttribBinding(0, 0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+	glVertexAttribBinding(1, 0);
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, textureCoordinates));
+	glVertexAttribBinding(2, 0);
+	glEnableVertexAttribArray(2);
+
+	updateMesh(true, true);
+}
+
+Mesh::Mesh(Mesh&& other) noexcept :
+	vertices{std::move(other.vertices)}, indices{std::move(other.indices)}, textures{std::move(other.textures)},
+	vao{other.vao}, vbo{other.vbo}, ebo{other.ebo}
+{
+	other.vao = 0;
+	other.vbo = 0;
+	other.ebo = 0;
+}
+
+Mesh& Mesh::operator=(Mesh other)
+{
+	swap(*this, other);
+	return *this;
 }
 
 void Mesh::updateMesh(bool verts, bool inds)
@@ -50,11 +99,10 @@ void Mesh::updateMesh(bool verts, bool inds)
 	}
 }
 
-void Mesh::draw(unsigned int shader)
+void Mesh::setTextures(unsigned int shader)
 {
-	glBindVertexArray(vao);
 	glUseProgram(shader);
-	
+
 	int diffuseIndex = 0, specularIndex = 0, emissiveIndex = 0;
 	for(int i = 0; i < textures.size(); i++)
 	{
@@ -62,12 +110,17 @@ void Mesh::draw(unsigned int shader)
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 
 		if(textures[i].type == TexMapType::DIFFUSE)
-			setUniform(shader, "diffuse" + std::to_string(diffuseIndex++), i);
+			setUniform(shader, std::format("diffuse{}", std::to_string(diffuseIndex++)), i);
 		else if(textures[i].type == TexMapType::SPECULAR)
-			setUniform(shader, "specular" + std::to_string(specularIndex++), i);
+			setUniform(shader, std::format("specular{}", std::to_string(specularIndex++)), i);
 		else if(textures[i].type == TexMapType::EMISSIVE)
-			setUniform(shader, "emissive" + std::to_string(emissiveIndex++), i);
+			setUniform(shader, std::format("emissive{}", std::to_string(emissiveIndex++)), i);
 	}
+}
 
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (const void*)0);
+void Mesh::draw(unsigned int shader)
+{
+	glUseProgram(shader);
+	glBindVertexArray(vao);
+	glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, (const void*)0);
 }

@@ -8,6 +8,7 @@
 #include <utility/keyboard_input.h>
 #include <utility/mouse_input.h>
 #include <utility/mesh.h>
+#include <utility/model.h>
 
 class Application
 {
@@ -24,6 +25,7 @@ private :
 
 	unsigned int cubeVAO, cubeVBO, cubeEBO;
 	Mesh cubeMesh;
+	Model backpackModel;
 
 	unsigned int lightShader;
 	glm::vec4 lightColor;

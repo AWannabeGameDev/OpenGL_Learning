@@ -1,5 +1,4 @@
 #include "utility/util.h"
-#include "stb_image/stb_image.h"
 #include <stdio.h> 
 #include <fstream>
 #include <sstream>
@@ -21,7 +20,7 @@ GLFWwindow* initialize(int windowWidth, int windowHeight, std::string_view title
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVersion);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
 	GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, title.data(), nullptr, nullptr);
 	if(!window)
@@ -66,7 +65,7 @@ unsigned int compileShader(unsigned int type, std::string_view path)
 	glShaderSource(shader, 1, &sourceStr, nullptr);
 	glCompileShader(shader);
 
-#if _DEBUG
+#ifdef _DEBUG
 
 	int success;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -101,7 +100,7 @@ unsigned int createShaderProgram(std::string_view vertexShaderPath, std::string_
 	glAttachShader(program, fshader);
 	glLinkProgram(program);
 
-#if _DEBUG
+#ifdef _DEBUG
 
 	int success;
 	glGetProgramiv(program, GL_LINK_STATUS, &success);

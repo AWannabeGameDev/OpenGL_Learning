@@ -21,7 +21,7 @@
     <ClInclude Include="include\utility\transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\stb_image\load.h">
+    <ClInclude Include="include\utility\load_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\utility\models.h">
@@ -40,6 +40,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\utility\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utility\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utility\model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utility\profiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
