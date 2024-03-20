@@ -157,7 +157,7 @@
     <ClInclude Include="include\utility\lighting.h" />
     <ClInclude Include="include\utility\mesh.h" />
     <ClInclude Include="include\utility\model.h" />
-    <ClInclude Include="include\utility\models.h" />
+    <ClInclude Include="include\utility\raw_model_data.h" />
     <ClInclude Include="include\utility\mouse_input.h" />
     <ClInclude Include="include\utility\profiler.h" />
     <ClInclude Include="include\utility\stb_image.h" />

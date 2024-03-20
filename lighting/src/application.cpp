@@ -1,19 +1,8 @@
 #include "application.h"
-#include <utility/models.h>
 #include <utility/model.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <ctime>
 #include <utility/profiler.h>
-
-static constexpr glm::vec2 texCoords[24] =
-{
-	{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-	{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-	{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-	{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-	{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-	{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}
-};
 
 float randrange(float min, float max)
 {
@@ -141,7 +130,6 @@ void Application::run()
 		setUniform(lightShader, "u_model", lightSrcTransform.matrix());
 		setUniform(lightShader, "u_view", camera.viewMatrix());
 		setUniform(lightShader, "u_color", lightColor);
-		glDrawElements(GL_TRIANGLES, models::cube::NUM_INDICES, GL_UNSIGNED_INT, (const void*)0);
 
 		glUseProgram(objectShader);
 		setUniform(objectShader, "u_view", camera.viewMatrix());

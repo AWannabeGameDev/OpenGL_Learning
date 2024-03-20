@@ -24,7 +24,7 @@
     <ClInclude Include="include\utility\load_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\utility\models.h">
+    <ClInclude Include="include\utility\raw_model_data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\utility\lighting.h">
